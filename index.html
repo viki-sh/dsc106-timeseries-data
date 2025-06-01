@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Scatter + Large Heatmap</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+  <div id="main-container">
+    <div id="explanation">
+      <h2>Understanding the Scatter Plot & Heatmap</h2>
+
+      <p>
+        The data visualized here come from two key domains in the operating room:
+      </p>
+      <ul>
+        <li><strong>Patient Vitals:</strong> Physiologic signals continuously measured from the patient : heart rate, blood pressure, oxygen saturation, and CO₂ levels.</li>
+        <li><strong>Ventilator & Infusion Settings:</strong> Clinician-controlled parameters such as inspired oxygen (FiO₂), PEEP, anesthetic concentration (MAC), and tidal volume.</li>
+      </ul>
+
+      <p>
+        These two domains are naturally interrelated. Clinicians respond to patient vitals by adjusting settings, and interventions may directly affect physiologic signals.
+      </p>
+
+      <p>A quick guide to what each selected parameter represents:</p>
+      <ul>
+        <li><strong>Arterial BP:</strong> Mean arterial pressure (mmHg)</li>
+        <li><strong>Diastolic BP:</strong> Lowest arterial pressure (mmHg)</li>
+        <li><strong>End-Tidal CO₂:</strong> Exhaled CO₂ at the end of a breath (mmHg)</li>
+        <li><strong>Heart Rate:</strong> Heartbeats per minute (bpm)</li>
+        <li><strong>NIBP Mean BP:</strong> Non-invasive mean blood pressure (mmHg)</li>
+        <li><strong>Oxygen Saturation:</strong> Percent of hemoglobin saturated with oxygen (SpO₂)</li>
+        <li><strong>Pleth HR:</strong> Heart rate derived from plethysmograph waveform</li>
+        <li><strong>ETCO2:</strong> End-tidal carbon dioxide sensor reading (mmHg)</li>
+        <li><strong>FiO₂ Setting:</strong> Fraction of inspired oxygen delivered to patient</li>
+        <li><strong>Insp Time Setting:</strong> Duration of inhalation phase (sec)</li>
+        <li><strong>MAC:</strong> Minimum alveolar concentration of anesthetic gas</li>
+        <li><strong>Minute Ventilation:</strong> Volume of air exhaled per minute (L/min)</li>
+        <li><strong>PEEP:</strong> Positive end-expiratory pressure (cmH₂O)</li>
+        <li><strong>Respiratory Rate:</strong> Breaths per minute</li>
+        <li><strong>Stroke Volume:</strong> Volume of blood pumped per heartbeat (mL)</li>
+        <li><strong>Systolic BP:</strong> Peak pressure during heartbeat (mmHg)</li>
+        <li><strong>Tidal Volume:</strong> Air moved per breath (mL)</li>
+      </ul>
+
+      <h3>Heatmap Summary</h3>
+
+      <p>
+        The <strong>Global Correlation Heatmap</strong> below shows how pairs of these parameters tend to behave across all surgical cases. Each square displays the average Pearson correlation (r) between two signals:
+      </p>
+      <ul>
+        <li><strong>Deep red:</strong> Strong positive correlation (e.g., both rise together)</li>
+        <li><strong>Deep blue:</strong> Strong negative correlation (e.g., one rises, the other falls)</li>
+        <li><strong>White or pale tones:</strong> Little or no consistent relationship</li>
+      </ul>
+    <p>
+      Use this heatmap to identify how these time series parameters are related to one another.
+    </p>
+
+    <p>
+      <strong>Notable Observations:</strong>  
+      The strongest correlations include:
+    </p>
+  <ul>
+    <li><strong>Arterial BP and Diastolic BP</strong>: These are two ways of measuring blood pressure, so it makes sense they rise and fall together. When the heart pumps harder or weaker, both values change in the same direction.</li>
+    <li><strong>End-Tidal CO₂ and ETCO₂</strong>: These both track the amount of carbon dioxide a patient breathes out. Since they are measured at nearly the same point in the breathing cycle, they tend to closely match.</li>
+  </ul>
+
+    <p>
+      On the other hand, several parameter pairs show little or no correlation, such as:
+    </p>
+    <ul>
+      <li><strong>Pleth HR and FiO₂ Setting</strong> and <strong>MAC and Stroke Volume</strong>,</li>
+      indicating that not all settings immediately influence or reflect changes in all vital signs.
+    </ul>
+
+    <p>
+      <strong>Overall Summary:</strong>  
+      This time-series dataset offers a view into both patient physiology and clinician behavior in the operating room. Vitals reflect the patient’s internal state, while ventilator and drug settings represent interventions. 
+      Together, these time-synchronized data streams form a comprehensive record of intraoperative care, which is valuable for understanding outcomes, improving decision making, and advancing patient safety.
+    </p>
+
+    </div>
+
+    <div id="visualization">
+      <div id="controls">
+        <div class="control-block">
+          <label for="case-select">Select Case ID:</label>
+          <select id="case-select"></select>
+        </div>
+        <div class="control-block">
+          <label for="param-x">X‐axis:</label>
+          <select id="param-x"></select>
+        </div>
+        <div class="control-block">
+          <label for="param-y">Y‐axis:</label>
+          <select id="param-y"></select>
+        </div>
+      </div>
+
+      <div id="chart-container">
+        <svg id="scatterplot"></svg>
+      </div>
+
+      <div id="heatmap-container">
+        <h3>Global Correlation Heatmap (All Cases)</h3>
+        <div id="heatmap-wrapper">
+          <svg id="heatmap" width="800" height="800"></svg>
+        </div>
+      </div>
+
+      <div
+        id="tooltip"
+        style="
+          position: absolute;
+          padding: 6px 10px;
+          background: rgba(0,0,0,0.75);
+          color: #fff;
+          font-size: 13px;
+          border-radius: 4px;
+          pointer-events: none;
+          visibility: hidden;
+          z-index: 10;
+        "
+      ></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
